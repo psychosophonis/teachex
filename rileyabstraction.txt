@@ -1,0 +1,152 @@
+// this is a rather complex attempt at abstracted the aesthetic of bridget riley's 'Encircling Discs'
+
+
+int circles; 					// circles is a variable describing the number circles to be laid out on the page - this is the main abstraction for this script everything is devolved from the number of circles and the screen size
+int margin = 150; 			// this is a margin to emulate the layout of the original
+int yMargin = margin+30; 		// this is a horizontal margin to emulate the slight difference between x&y margins in the original
+int rows, columns;  			// these are calculted by the function calcRowsCols() depending on highest pair of factors derived from the circles variable
+int m = 6; 					// this defines the Y axis of an 2 dimensional array that holds the colour set in each iteration. 
+int n = 3; 					// this defines the X axis of an 2 dimensional array that holds the colour set in each iteration. 
+int offset; 					// this is a silly hack I added to create some more varaibility in the inner circle and adjust its size
+int[][] ColoursArray = new int[m][n]; 	// tghis is the 2 dimensional array
+  
+
+// processing sketches have two main functions that run when you hit play - 'void setup'  which runs once when you start the script and 'void draw' which runs once a frame.
+
+
+void setup() {
+ 
+  size(768,1024); 		//this sets up the screen size.
+  
+  circles = (int)random(24);    
+
+// I have set 'circles' to                    a random selection of 36 - the original work was 6 circles - but i'm more interested in an aesthtic abstraction.
+
+// the code below randomly seeds an array with 6 colours.
+
+  for (int j =0; j < 6 ; j++) { 
+    for (int i =0; i < 3 ; i++) {
+     ColoursArray[j][i] = (int)random(255);
+  }
+  }
+  
+//end of color array assignment
+
+
+//now I set up to draw
+
+ background (25);   //background is painted black in the original - i wondered if slightly grey might be better.
+ noStroke();
+ calcRowsCols(circles); //this is the function that works out how mny columns and rows by finding the higest pair of factors
+
+// this sets up a drawing width the margin out of my calculations
+
+ int xAxis = width-(2*margin);  
+ int yAxis = height-(2*yMargin);  
+
+// 
+
+ int circSize = (int)(xAxis/columns/.9);  //establish the circle size based on drawing width and no of columns
+ offset = circSize/(1+(int)random(2,5)); // this randomizes my central circle a little between executions
+
+// section below is a messy bit I could have written more intelligently - it also does most of the work taking the number of columns and rows and working out where scircles should go given the aesthetic described by the original. 
+// If there is only one column or row things should start centered,
+// If there are two columns or rows circles are positioned at the corners alone. If more row and columns are suggested everything (else) is spaced evenly between the corners.
+
+int x,y;
+ for ( int i = 0; i < rows; i++){
+   for (int j = 0; j < columns; j++){
+    if (columns == 1) {
+     x = margin+xAxis/2; }
+     else { if (columns == 2){
+     x = margin+j*xAxis;
+     } else { 
+     x = margin+j*(xAxis/(columns-1));
+     }
+     }
+
+//same for y as for x coordinates
+   
+     if (rows == 1) {
+      y= yMargin+yAxis/2; }
+     else { 
+     if (rows == 2 ){
+     y = yMargin+i*yAxis;
+     } else {
+     y = yMargin+i*(yAxis/(rows-1));
+     }
+     }
+     makeCircle(x,y,circSize/2); 
+
+//this sends the x,y coordinates and the radius of each circle to my makeCircle function. When I first wrote this makeCircle just used an ellipse function to draw a simple circle but I put it in a seperate function so I could develop my encircled discs later.
+
+   }
+ }
+
+}
+
+
+// the function below draw my encircled discs. it started out as simple holding a single ellipse. when I knew I had my positions, rows and columns working I could then develop the circle object more completely and inline with the aesthetic
+
+void makeCircle(int x, int y, int Radius){
+ 
+  x = x + (int)random(-(50/circles),(50/circles));
+  y = y + (int)random(-(50/circles),(50/circles));
+
+//the two line above just add a bit of randomness to the positions - I liked how the original circles didn't line up exactly.
+
+  int encRadius = Radius;
+
+// imgoing to save Radius for use later while I subtract from endRadius to draw my onsecutive circles in smaller iterations
+
+  int enCirc = (int)random(2);  // another sprinkle of randomness this time to randomise the number of concentric circles by one.
+  enCirc = enCirc+3;  // so there'll be three concentric circles added to whatever random value I get from above
+
+//this bit here is particulary useful if you are trying to emulate this drawing...here I iterate through enCirc to draw succesively smaller circles  
+
+for ( int i =0; i < enCirc; i++)  {
+  fill(ColoursArray[(int)random(0,5)][i],ColoursArray[(int)random(0,5)][i],ColoursArray[(int)random(0,5)][i]);
+
+// just a standard fill function stuffed with colour values from the array I filled earlier - this allows for a limited pallette rather than just completely random selctions.
+
+  ellipse(x,y,encRadius,encRadius);
+  encRadius = encRadius-(Radius/10+(int)random(10)); 
+  }
+
+// The above 'for' function draws down the radius of my concentric circles as it draws  based-on/relative-to the Radius of the main circle. Try and understand this its very useful...
+
+
+//now I'm going to draw my final central circle - same colour for each iteration as in the oirginal.
+
+  fill(ColoursArray[2][0],ColoursArray[2][1],ColoursArray[2][2]);
+  ellipse(x,y,Radius-offset,Radius-offset);
+}
+
+// this is the end of the circle drawing    
+
+//this function below (caclRowCols()) does exactly that - it finds the higest pair of factor multiples and returns them as the number of rows and columns.
+  
+void calcRowsCols(int circles) {
+    int prevFactor = 1;
+    for (int m = 1; m < circles+1; m++){
+      if (circles % m == 0) {
+        int factor = m;
+        if (prevFactor * factor == circles){
+          rows = prevFactor;
+          columns = factor;
+          print(rows,columns);
+          return; 
+        } else {
+        if (sq(factor) == circles){
+            rows = factor;
+            columns = factor;
+            print(rows,columns);
+            return;
+        } else { 
+        prevFactor = factor;
+        }
+        }
+  
+      }
+    }
+}
