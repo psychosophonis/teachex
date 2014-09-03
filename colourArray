@@ -1,0 +1,39 @@
+ int m = 4; 
+  int n = 4;
+  int[][] ColoursArray = new int[m][n];
+
+void setup(){
+  
+  size(1024,768);
+  RandomColour();
+  
+}
+
+void draw(){
+ 
+  int colRan1 = (int)random(0,3);
+  
+  
+ fill(ColoursArray[0][colRan1],ColoursArray[1][colRan1],ColoursArray[2][colRan1],ColoursArray[3][colRan1]);
+ ellipse(width/6*1, height/2,300,200);
+ fill(ColoursArray[0][2],ColoursArray[1][2],ColoursArray[2][2],ColoursArray[3][2]);
+ ellipse(width/6*2, height/2,300,200);
+ fill(ColoursArray[0][1],ColoursArray[1][1],ColoursArray[2][1],ColoursArray[3][1]);
+ ellipse(width/6*3, height/2,300,200);
+ fill(ColoursArray[0][3],ColoursArray[1][3],ColoursArray[2][3],ColoursArray[3][3]);
+ ellipse(width/6*4, height/2,300,200);
+  
+  
+}
+
+
+
+
+void RandomColour(){
+ 
+   for (int j =0; j < 4 ; j++) { //
+    for (int i =0; i < 4 ; i++) {
+     ColoursArray[j][i] = (int)random(255);
+  }
+  }
+}
