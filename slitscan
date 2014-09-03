@@ -1,0 +1,47 @@
+// load up the code that knows all about videos
+import processing.video.*;
+ 
+// the object "cam" represents the webcam
+Capture cam;
+ 
+// Decide on the video size
+// find the capture camera, and start it
+void setup() {
+size(1280, 960);
+String[] cameras = Capture.list();
+ 
+if (cameras.length == 0) {
+println("There are no cameras available for capture.");
+exit();
+} else {
+println("Available cameras:");
+for (int i = 0; i &lt; cameras.length; i++) {
+println(cameras[i]);
+}
+ 
+// The camera can be initialized directly using an
+// element from the array returned by list():
+cam = new Capture(this, cameras[0]);
+cam.start();
+}
+}
+ 
+// This code allows us to know when a new video frame has come in
+boolean b_newFrame = false;
+public void captureEvent(Capture c) {
+c.read();
+b_newFrame = true;
+}
+ 
+// Now this is the business
+void draw() {
+if (b_newFrame) { // For every frame of live video
+loadPixels(); // Load the video frame
+int slice_mask = (width*height/2)-width; // this is the first pixel in the middle row
+for (int i = slice_mask; i &lt; (slice_mask + width); i++) { // For each individual pixel in the middle row of pixels in the video
+int sliceDestination = i - slice_mask; // Pixels will be copied TO the top row of the canvas
+int sliceSource = i; // Pixels will be copied FROM the center row of the video
+pixels[sliceDestination] = cam.pixels[sliceSource]; // Copy the center row of the video to the top of the canvas
+}
+arrayCopy(pixels, 0, pixels, width, (height - 1) * width); // Move everything down one row to make room for new frames of video
+updatePixels();
