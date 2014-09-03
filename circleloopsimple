@@ -1,0 +1,34 @@
+void setup() {
+
+size(1024,768);
+noLoop();
+
+}
+
+void draw (){
+ 
+ noFill();
+ background(255); 
+ int radius = (int)random(10,100);
+ int Circles = (int)random(10,40);
+ int xProg = width/(Circles+1);
+ int yProg = height/(Circles+2);
+ int y= yProg;
+ int x= xProg;
+  
+ 
+ for (int j=0; j < Circles; j++ ) {
+   for (int i=0; i < Circles; i++) {
+   
+     ellipse(x,y,radius*2,radius*2);
+     x+= xProg;
+   
+ }
+ 
+ y+= yProg;
+ x = xProg;
+   
+   
+ }
+} 
+ 
